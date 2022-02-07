@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SchedulingApplication.Services;
 
-namespace WebApplication1
+namespace SchedulingApplicaiton
 {
     public class Startup
     {
@@ -20,7 +21,7 @@ namespace WebApplication1
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddSingleton<ISolutionPrinter, SolutionPrinter>();
             services.AddControllersWithViews();
 
             // In production, the React files will be served from this directory

@@ -171,12 +171,12 @@ namespace SchedulingApplication.Services
             };
 
             int calculateElementsToFormAnObject = CalculateElementsToFormAnObject(_daysNumber, _guardsNumber);
-            var listsWithEachSolution = SplitSolutionsInfoIntoObjects(cb._solutionsInfo, calculateElementsToFormAnObject, solutionLimit);
+            var listsWithEachSolution = SplitAllInfoIntoSolutionObjects(cb._solutionsInfo, calculateElementsToFormAnObject, solutionLimit);
 
             return Array.Empty<object>();
         }
 
-        private static IList<List<string>> SplitSolutionsInfoIntoObjects(List<string> solutionsInfo, int numElementsInAnObject, int solutionLimit)
+        private IList<List<string>> SplitAllInfoIntoSolutionObjects(List<string> solutionsInfo, int numElementsInAnObject, int solutionLimit)
         {
             //TODO: в цьому методі сформувати об'єкти в яких буде по 1 солушену (з усіма його рядками). Потім передати це все на фронт. Інтегрувати в основну апку.
             IList<List<string>> listsWithEachSolution = new List<List<string>>() { };
@@ -190,7 +190,7 @@ namespace SchedulingApplication.Services
             return listsWithEachSolution;
         }
 
-        private static int CalculateElementsToFormAnObject(int numDays, int numNurses)
+        private int CalculateElementsToFormAnObject(int numDays, int numNurses)
         {
             int slotForASolution = 1;
             int numGuardsInAnObject = numDays * numNurses;

@@ -56,7 +56,7 @@ export class FetchData extends Component {
     }
 
     async populateWeatherData() {
-        await fetch('WeatherForecast')
+        await fetch('api/WeatherForecast')
             .then(res => res.json())
             .then(
                 (data) => {

@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace SchedulingApplicaiton.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -24,16 +24,24 @@ namespace SchedulingApplicaiton.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        //[Route("/Get")]
+        public IActionResult GetTemperatureList()
         {
             var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            var data = Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
                 TemperatureC = rng.Next(-20, 55),
                 Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+            }).ToArray();
+
+            if (data is null)
+            {
+                _logger.LogError("No data in temperature list");
+                return BadRequest("Data is null");
+            }
+
+            return Ok(data);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SchedulingApplicaiton.Controllers;
 using SchedulingApplication.Services;
-using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace SchedulingApplication.Controllers
 {
@@ -9,25 +10,34 @@ namespace SchedulingApplication.Controllers
     public class ScheduleController : ControllerBase
     {
         private readonly ISolutionPrinter _solutionPrinter;
-        public ScheduleController(ISolutionPrinter solutionPrinter)
+        private readonly ILogger<WeatherForecastController> _logger;
+        public ScheduleController(ISolutionPrinter solutionPrinter, ILogger<WeatherForecastController> logger)
         {
             _solutionPrinter = solutionPrinter;
+            _logger = logger;
         }
 
         [HttpGet]
-        [Route("/Get")]
-        public IEnumerable<object> Get(int guardsNumber, int daysNumber, int shiftsNumber)
+        //[Route("/Get")]
+        public IActionResult GetCalculatedSolutions(int guardsNumber, int daysNumber, int shiftsNumber)
         {
             var solutions = _solutionPrinter.CalculateSolutions(guardsNumber, daysNumber, shiftsNumber);
-            return solutions;
+
+            if (solutions is null)
+            {
+                _logger.LogError("Solutions were null");
+                return BadRequest("Solutions were null");
+            }
+
+            return Ok(solutions);
         }
        
         // GET api/<ScheduleController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }        
+        //[HttpGet("{id}")]
+        //public string Get(int id)
+        //{
+        //    return "value";
+        //}        
     }
 
     

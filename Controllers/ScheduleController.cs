@@ -19,9 +19,9 @@ namespace SchedulingApplication.Controllers
 
         [HttpGet]
         //[Route("/Get")]
-        public IActionResult GetCalculatedSolutions(int guardsNumber, int daysNumber, int shiftsNumber)
+        public IActionResult GetCalculatedSolutions(int days, int guards, int shifts)
         {
-            var solutions = _solutionPrinter.CalculateSolutions(guardsNumber, daysNumber, shiftsNumber);
+            var solutions = _solutionPrinter.CalculateSolutions(guards, days, shifts);
 
             if (solutions is null)
             {

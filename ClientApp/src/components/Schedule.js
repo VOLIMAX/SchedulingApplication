@@ -69,16 +69,11 @@ export class Schedule extends Component {
     }
 
     async populateWeatherData() {
-        await fetch('api/WeatherForecast', {
+        await fetch('api/Schedule?Days=3&Guards=3&Shifts=3', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                numberOfDays:   1,//need number
-                numberOfGuards: 1,//need number
-                numberOfShifts: 1,//need number
-            })
+            }
         })
         .then(res => res.json())
         .then(

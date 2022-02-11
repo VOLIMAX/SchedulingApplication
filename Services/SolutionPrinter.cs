@@ -9,14 +9,19 @@ namespace SchedulingApplication.Services
     public class SolutionPrinter : CpSolverSolutionCallback, ISolutionPrinter
     {
         private int _solutionCount;
-        private readonly int[] _allGuards;
-        private readonly int[] _allDays;
-        private readonly int[] _allShifts;
-        private readonly Dictionary<Tuple<int, int, int>, IntVar> _shifts;
-        private readonly int _solutionLimit;
+        private int[] _allGuards;
+        private int[] _allDays;
+        private int[] _allShifts;
+        private Dictionary<Tuple<int, int, int>, IntVar> _shifts;
+        private int _solutionLimit;
         public List<string> _solutionsInfo = new List<string>();
 
-        public SolutionPrinter(int[] allGuards, int[] allDays, int[] allShifts,
+        public SolutionPrinter()
+        {
+
+        }
+
+        public void SetData(int[] allGuards, int[] allDays, int[] allShifts,
                                Dictionary<Tuple<int, int, int>, IntVar> shifts, int limit)
         {
             _solutionCount = 0;
@@ -60,7 +65,7 @@ namespace SchedulingApplication.Services
             }
         }
 
-        public IEnumerable<object> CalculateSolutions(int guardsNumber, int daysNumber, int shiftsNumber)
+        public SchedulingModel CalculateSolutions(int guardsNumber, int daysNumber, int shiftsNumber)
         {
             int _guardsNumber = guardsNumber;
             int _daysNumber = daysNumber;
@@ -151,16 +156,11 @@ namespace SchedulingApplication.Services
             solver.StringParameters += "enumerate_all_solutions:true ";
 
             const int solutionLimit = 5;
-            SolutionPrinter cb = new(allGuards, allDays, allShifts, shifts, solutionLimit);
+            SetData(allGuards, allDays, allShifts, shifts, solutionLimit);
+            SolutionPrinter cb = new();
 
             // Solve
             CpSolverStatus status = solver.Solve(model, cb);
-            Console.WriteLine($"Solve status: {status}");
-
-            Console.WriteLine("Statistics");
-            Console.WriteLine($"  conflicts: {solver.NumConflicts()}");
-            Console.WriteLine($"  branches : {solver.NumBranches()}");
-            Console.WriteLine($"  wall time: {solver.WallTime()}s");
 
             var statistics = new StatisticsModel
             {
@@ -172,8 +172,13 @@ namespace SchedulingApplication.Services
 
             int calculateElementsToFormAnObject = CalculateElementsToFormAnObject(_daysNumber, _guardsNumber);
             var listsWithEachSolution = SplitAllInfoIntoSolutionObjects(cb._solutionsInfo, calculateElementsToFormAnObject, solutionLimit);
+            var data = new SchedulingModel 
+            { 
+                ListsWithEachSolution = listsWithEachSolution, 
+                Statistics = statistics 
+            };
 
-            return Array.Empty<object>();
+            return data;
         }
 
         private IList<List<string>> SplitAllInfoIntoSolutionObjects(List<string> solutionsInfo, int numElementsInAnObject, int solutionLimit)

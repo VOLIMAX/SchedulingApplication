@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using SchedulingApplication.Models;
 
 namespace SchedulingApplication.Services
 {
     public interface ISolutionPrinter
     {
-        public IEnumerable<object> CalculateSolutions(int guardsNumber, int daysNumber, int shiftsNumber);
+        public SchedulingModel CalculateSolutions(int guardsNumber, int daysNumber, int shiftsNumber);
     }
 }

@@ -7,7 +7,8 @@ export class Schedule extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            items: [],
+            statistics: [],
+            listsWithEachSolution: {},
             isLoaded: false,
             error: null
         };
@@ -17,31 +18,36 @@ export class Schedule extends Component {
         this.populateWeatherData();
     }
 
+    async populateWeatherData() {
+        await fetch('api/Schedule?Days=3&Guards=3&Shifts=3', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(
+            (data) => {
+                this.setState({
+                    isLoaded: true,
+                    statistics: data.statistics,
+                    listsWithEachSolution: data.listsWithEachSolution
+                });
+            },
+            (error) => {
+                this.setState({
+                    isLoaded: true,
+                    error
+                });
+            }
+        )
+    }
+
     static renderForecastsTable(items) {
         return (
             // TODO: user types 3 inputs and clicks "Find solution" button, 
             // I pass it to the backend, perform calculatins, get data back, and only then show this table
             // Знайти в реакті щось схоже на ngIf
-            <table className='table table-striped' aria-labelledby="tabelLabel">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Temp. (C)</th>
-                        <th>Temp. (F)</th>
-                        <th>Summary</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {items.map(item =>
-                        <tr key={item.date}>
-                            <td>{item.date}</td>
-                            <td>{item.temperatureC}</td>
-                            <td>{item.temperatureF}</td>
-                            <td>{item.summary}</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
         );
     }
 
@@ -66,29 +72,5 @@ export class Schedule extends Component {
                 <div style={{ marginTop: "20px" }}>{contents}</div>
             </div>
         );
-    }
-
-    async populateWeatherData() {
-        await fetch('api/Schedule?Days=3&Guards=3&Shifts=3', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(
-            (data) => {
-                this.setState({
-                    isLoaded: true,
-                    items: data
-                });
-            },
-            (error) => {
-                this.setState({
-                    isLoaded: true,
-                    error
-                });
-            }
-        )
     }
 }

@@ -47,12 +47,12 @@ namespace SchedulingApplication.Services
                         if (Value(_shifts[key]) == 1L)
                         {
                             isWorking = true;                            
-                            _solutionsInfo.Add($"  Guard {g + 1} work shift {s + 1}");
+                            _solutionsInfo.Add($"Guard {g + 1} work shift {s + 1}");
                         }
                     }
                     if (!isWorking)
                     {                        
-                        _solutionsInfo.Add($"  Guard {g + 1} does not work");
+                        _solutionsInfo.Add($"Guard {g + 1} does not work");
                     }
                 }
             }
@@ -156,11 +156,15 @@ namespace SchedulingApplication.Services
             solver.StringParameters += "enumerate_all_solutions:true ";
 
             const int solutionLimit = 5;
+            
+            SolutionPrinter cb = this;
             SetData(allGuards, allDays, allShifts, shifts, solutionLimit);
-            SolutionPrinter cb = new();
 
             // Solve
-            CpSolverStatus status = solver.Solve(model, cb);
+            CpSolverStatus status = solver.Solve(model, cb);            
+
+            int calculateElementsToFormAnObject = CalculateElementsToFormAnObject(_daysNumber, _guardsNumber);
+            var listsWithEachSolution = SplitAllInfoIntoSolutionObjects(cb._solutionsInfo, calculateElementsToFormAnObject, solutionLimit);
 
             var statistics = new StatisticsModel
             {
@@ -170,8 +174,6 @@ namespace SchedulingApplication.Services
                 SolverStatus = status
             };
 
-            int calculateElementsToFormAnObject = CalculateElementsToFormAnObject(_daysNumber, _guardsNumber);
-            var listsWithEachSolution = SplitAllInfoIntoSolutionObjects(cb._solutionsInfo, calculateElementsToFormAnObject, solutionLimit);
             var data = new SchedulingModel 
             { 
                 ListsWithEachSolution = listsWithEachSolution, 

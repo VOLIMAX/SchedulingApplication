@@ -47,7 +47,7 @@ namespace SchedulingApplication.Services
                         if (Value(_shifts[key]) == 1L)
                         {
                             isWorking = true;                            
-                            _solutionsInfo.Add($"Guard {g + 1} work shift {s + 1}");
+                            _solutionsInfo.Add($"Guard {g + 1} works shift {s + 1}");
                         }
                     }
                     if (!isWorking)
@@ -185,12 +185,11 @@ namespace SchedulingApplication.Services
 
         private IList<List<string>> SplitAllInfoIntoSolutionObjects(List<string> solutionsInfo, int numElementsInAnObject, int solutionLimit)
         {
-            //TODO: в цьому методі сформувати об'єкти в яких буде по 1 солушену (з усіма його рядками). Потім передати це все на фронт. Інтегрувати в основну апку.
             IList<List<string>> listsWithEachSolution = new List<List<string>>() { };
             int itemsToSkip = 0;
             for (int i = 0; i < solutionLimit; i++)
             {
-                List<string> addObjectToTheMainList = solutionsInfo.Skip(itemsToSkip).Take(numElementsInAnObject).ToList();
+                var addObjectToTheMainList = solutionsInfo.Skip(itemsToSkip).Take(numElementsInAnObject).ToList();
                 itemsToSkip += numElementsInAnObject;
                 listsWithEachSolution.Add(addObjectToTheMainList);
             }

@@ -1,5 +1,6 @@
-﻿import React, { Component } from 'react';
-//import { useForm } from "react-hook-form";
+﻿import React, {Component} from 'react';
+import {Formik, Field, Form, useField, useFormikContext} from 'formik';
+import './Schedule.css';
 
 export class Schedule extends Component {
     static displayName = Schedule.name;
@@ -7,69 +8,100 @@ export class Schedule extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            data: {
+                daysNum: 0,
+                guardsNum: 0,
+                shiftsNum: 0,
+            },
             statistics: [],
             listsWithEachSolution: {},
+            isFormSubmitted: false,
             isLoaded: false,
             error: null
         };
     }
 
-    componentDidMount() {
-        this.populateWeatherData();
-    }
-
-    async populateWeatherData() {
-        await fetch('api/Schedule?Days=3&Guards=3&Shifts=3', {
+    async populateSchedulingData() {
+        await fetch(`api/Schedule?Days=${this.state.data.daysNum}&Guards=${this.state.data.guardsNum}&Shifts=${this.state.data.shiftsNum}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             }
         })
-        .then(res => res.json())
-        .then(
-            (data) => {
-                this.setState({
-                    isLoaded: true,
-                    statistics: data.statistics,
-                    listsWithEachSolution: data.listsWithEachSolution
-                });
-            },
-            (error) => {
-                this.setState({
-                    isLoaded: true,
-                    error
-                });
-            }
-        )
+            .then(res => res.json())
+            .then(
+                (data) => {
+                    this.setState({
+                        isLoaded: true,
+                        statistics: data.statistics,
+                        listsWithEachSolution: data.listsWithEachSolution
+                    });
+                },
+                (error) => {
+                    this.setState({
+                        isLoaded: true,
+                        error
+                    });
+                }
+            )
     }
 
-    static renderForecastsTable(items) {
+    formikForm() {
+        const initialValues = {daysNum: '', guardsNum: '', shiftsNum: ''};
+
         return (
-            // TODO: user types 3 inputs and clicks "Find solution" button, 
-            // I pass it to the backend, perform calculatins, get data back, and only then show this table
-            // Знайти в реакті щось схоже на ngIf
+            <div className="App">
+                <Formik
+                    initialValues={initialValues}
+                    onSubmit={async (values) => {
+                        this.setState({
+                            data: { daysNum: values.daysNum, guardsNum: values.guardsNum, shiftsNum: values.shiftsNum, isFormSubmitted: true }
+                        }, 
+                        this.populateSchedulingData)
+                    }}
+                >
+                    <div className="section">
+                        <Form>
+                            <label>
+                                Number of days
+                                <Field name="daysNum"/>
+                            </label>
+                            <label>
+                                Number of guards
+                                <Field name="guardsNum"/>
+                            </label>
+                            <label>
+                                Number of shifts
+                                <Field name="shiftsNum"/>
+                            </label>
+                            <button type="submit">Submit</button>
+                        </Form>
+                    </div>
+                </Formik>
+            </div>
+        );
+    }
+
+    renderSchedulingTable() {
+        return (<div>Render table</div>
+            // TODO: understand why this function isn't shown after submitting, show table, add reset state button, groom fields
+            
         );
     }
 
     render() {
         let contents = this.state.isLoaded
-            ? Schedule.renderForecastsTable(this.state.items)
+            ? this.renderSchedulingTable()
             : <p><em>Loading...</em></p>;
-
-        //const { register, handleSubmit } = useForm();
-        //const onSubmit = data => console.log(data);
+        
+        
 
         return (
             <div>
                 <h1 id="tabelLabel">Schedule</h1>
                 <p>This component creates an optimal shifts schedule for the security firm employees</p>
-                {/* <form onSubmit={handleSubmit(onSubmit)}>          
-                <input type="number" {...register("numberOfNurses", { required: true, min: 0, max: 99 })} />
-                <input type="number" {...register("numberOfDays", { required: true, min: 0, max: 99 })} />
-                <input type="number" {...register("numberOfShifts", { required: true, min: 0, max: 99 })} />
-                <input type="submit" />
-                </form> */}
-                <div style={{ marginTop: "20px" }}>{contents}</div>
+                {this.formikForm()}
+                {this.state.isFormSubmitted ? <div style={{marginTop: "20px"}}>{contents}</div> : null}
             </div>
         );
     }

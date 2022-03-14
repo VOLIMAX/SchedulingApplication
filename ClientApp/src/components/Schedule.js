@@ -13,13 +13,24 @@ export class Schedule extends Component {
                 guardsNum: 0,
                 shiftsNum: 0,
             },
-            statistics: [],
-            listsWithEachSolution: {},
-            isFormSubmitted: false,
+            statistics: {},
+            solutionsInfoLists: [],
+            solutions: [],
             isLoaded: false,
             error: null
         };
     }
+
+    //TODO: Rework field validation someday
+
+    // validate = value => {
+    //     let errorMessage;
+    //     if (value <= 0) {
+    //         errorMessage = 'Insert number which has bigger value than zero';
+    //         console.log(errorMessage);
+    //     }
+    //     return errorMessage;
+    // };
 
     async populateSchedulingData() {
         await fetch(`api/Schedule?Days=${this.state.data.daysNum}&Guards=${this.state.data.guardsNum}&Shifts=${this.state.data.shiftsNum}`, {
@@ -34,7 +45,8 @@ export class Schedule extends Component {
                     this.setState({
                         isLoaded: true,
                         statistics: data.statistics,
-                        listsWithEachSolution: data.listsWithEachSolution
+                        solutionsInfoLists: data.solutionsInfoLists,
+                        solutions: data.solutions
                     });
                 },
                 (error) => {
@@ -55,24 +67,24 @@ export class Schedule extends Component {
                     initialValues={initialValues}
                     onSubmit={async (values) => {
                         this.setState({
-                            data: { daysNum: values.daysNum, guardsNum: values.guardsNum, shiftsNum: values.shiftsNum, isFormSubmitted: true }
-                        }, 
-                        this.populateSchedulingData)
+                                data: {daysNum: values.daysNum, guardsNum: values.guardsNum, shiftsNum: values.shiftsNum}
+                            },
+                            this.populateSchedulingData)
                     }}
                 >
                     <div className="section">
                         <Form>
                             <label>
                                 Number of days
-                                <Field name="daysNum"/>
+                                <Field validate={this.validate} name="daysNum" placeholder="0"/>
                             </label>
                             <label>
                                 Number of guards
-                                <Field name="guardsNum"/>
+                                <Field validate={this.validate} name="guardsNum" placeholder="0"/>
                             </label>
                             <label>
                                 Number of shifts
-                                <Field name="shiftsNum"/>
+                                <Field validate={this.validate} name="shiftsNum" placeholder="0"/>
                             </label>
                             <button type="submit">Submit</button>
                         </Form>
@@ -82,26 +94,48 @@ export class Schedule extends Component {
         );
     }
 
-    renderSchedulingTable() {
-        return (<div>Render table</div>
-            // TODO: understand why this function isn't shown after submitting, show table, add reset state button, groom fields
-            
+    renderSchedulingTable(solutionsInfoLists, solutions) {
+        // TODO: 1) make solutions as table headers in a separate list
+        //       2) add reset state button
+        return (
+            <table className='table table-striped'>
+                <thead className="table-dark">
+                    <tr className="d-flex flex-row justify-content-around">
+                        {solutions.map(solution =>
+                            <th>
+                                <div>{solution}</div>
+                            </th>
+                        )}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr className="d-flex flex-row justify-content-around">
+                        {solutionsInfoLists.map(solutionList =>
+                            <td>
+                                <div>
+                                    {solutionList.map(item =>
+                                        <div>{item}</div>)}
+                                </div>
+                            </td>
+                        )}
+                    </tr>
+                </tbody>
+            </table>
         );
     }
 
     render() {
         let contents = this.state.isLoaded
-            ? this.renderSchedulingTable()
-            : <p><em>Loading...</em></p>;
-        
-        
+            ? this.renderSchedulingTable(this.state.solutionsInfoLists, this.state.solutions)
+            : <p><em>Waiting for you to start the calculation</em></p>;
+
 
         return (
             <div>
-                <h1 id="tabelLabel">Schedule</h1>
+                <h1 id="tableLabel">Schedule</h1>
                 <p>This component creates an optimal shifts schedule for the security firm employees</p>
                 {this.formikForm()}
-                {this.state.isFormSubmitted ? <div style={{marginTop: "20px"}}>{contents}</div> : null}
+                <div>{contents}</div>
             </div>
         );
     }

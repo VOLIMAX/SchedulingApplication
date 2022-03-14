@@ -14,7 +14,8 @@ namespace SchedulingApplication.Services
         private int[] _allShifts;
         private Dictionary<Tuple<int, int, int>, IntVar> _shifts;
         private int _solutionLimit;
-        public List<string> _solutionsInfo = new List<string>();
+        public List<string> _solutionsInfo = new ();
+        public List<string> _solutions = new ();
 
         public SolutionPrinter()
         {
@@ -34,7 +35,7 @@ namespace SchedulingApplication.Services
 
         public override void OnSolutionCallback()
         {            
-            _solutionsInfo.Add($"Solution #{_solutionCount + 1}:");
+            _solutions.Add($"Solution #{_solutionCount + 1}:");
             foreach (int d in _allDays)
             {                
                 _solutionsInfo.Add($"Day {d + 1}");
@@ -79,7 +80,7 @@ namespace SchedulingApplication.Services
             CpModel model = new();
 
             // Creates shift variables.
-            // shifts[(n, d, s)]: guard 'n' works shift 's' on day 'd'.
+            // shifts[(g, d, s)]: guard 'g' works shift 's' on day 'd'.
             Dictionary<Tuple<int, int, int>, IntVar> shifts = new();
             foreach (int g in allGuards)
             {
@@ -87,7 +88,7 @@ namespace SchedulingApplication.Services
                 {
                     foreach (int s in allShifts)
                     {
-                        shifts.Add(Tuple.Create(g, d, s), model.NewBoolVar($"shifts_n{g}d{d}s{s}"));
+                        shifts.Add(Tuple.Create(g, d, s), model.NewBoolVar($"shifts_g{g}d{d}s{s}"));
                     }
                 }
             }
@@ -98,10 +99,10 @@ namespace SchedulingApplication.Services
                 foreach (int s in allShifts)
                 {
                     IntVar[] x = new IntVar[_guardsNumber];
-                    foreach (int n in allGuards)
+                    foreach (int g in allGuards)
                     {
-                        var key = Tuple.Create(n, d, s);
-                        x[n] = shifts[key];
+                        var key = Tuple.Create(g, d, s);
+                        x[g] = shifts[key];
                     }
                     model.Add(LinearExpr.Sum(x) == 1);
                 }
@@ -136,14 +137,14 @@ namespace SchedulingApplication.Services
             {
                 maxShiftsPerGuard = minShiftsPerGuard + 1;
             }
-            foreach (int n in allGuards)
+            foreach (int g in allGuards)
             {
                 IntVar[] numShiftsWorked = new IntVar[_daysNumber * _shiftsNumber];
                 foreach (int d in allDays)
                 {
                     foreach (int s in allShifts)
                     {
-                        var key = Tuple.Create(n, d, s);
+                        var key = Tuple.Create(g, d, s);
                         numShiftsWorked[d * _shiftsNumber + s] = shifts[key];
                     }
                 }
@@ -164,7 +165,7 @@ namespace SchedulingApplication.Services
             CpSolverStatus status = solver.Solve(model, cb);            
 
             int calculateElementsToFormAnObject = CalculateElementsToFormAnObject(_daysNumber, _guardsNumber);
-            var listsWithEachSolution = SplitAllInfoIntoSolutionObjects(cb._solutionsInfo, calculateElementsToFormAnObject, solutionLimit);
+            var solutionsInfoLists = SplitAllInfoIntoSolutionObjects(cb._solutionsInfo, calculateElementsToFormAnObject, solutionLimit);
 
             var statistics = new StatisticsModel
             {
@@ -176,8 +177,9 @@ namespace SchedulingApplication.Services
 
             var data = new SchedulingModel 
             { 
-                ListsWithEachSolution = listsWithEachSolution, 
-                Statistics = statistics 
+                SolutionsInfoLists = solutionsInfoLists, 
+                Statistics = statistics,
+                Solutions = cb._solutions
             };
 
             return data;
@@ -185,22 +187,23 @@ namespace SchedulingApplication.Services
 
         private IList<List<string>> SplitAllInfoIntoSolutionObjects(List<string> solutionsInfo, int numElementsInAnObject, int solutionLimit)
         {
-            IList<List<string>> listsWithEachSolution = new List<List<string>>() { };
+            IList<List<string>> solutionsInfoLists = new List<List<string>>();
             int itemsToSkip = 0;
+            
             for (int i = 0; i < solutionLimit; i++)
             {
                 var addObjectToTheMainList = solutionsInfo.Skip(itemsToSkip).Take(numElementsInAnObject).ToList();
                 itemsToSkip += numElementsInAnObject;
-                listsWithEachSolution.Add(addObjectToTheMainList);
+                solutionsInfoLists.Add(addObjectToTheMainList);
             }
-            return listsWithEachSolution;
+            
+            return solutionsInfoLists;
         }
 
-        private int CalculateElementsToFormAnObject(int numDays, int numNurses)
+        private int CalculateElementsToFormAnObject(int numDays, int numGuards)
         {
-            int slotForASolution = 1;
-            int numGuardsInAnObject = numDays * numNurses;
-            int calculateElementsToFormAnObject = slotForASolution + numDays + numGuardsInAnObject;
+            int numGuardsInAnObject = numDays * numGuards;
+            int calculateElementsToFormAnObject = numDays + numGuardsInAnObject;
 
             return calculateElementsToFormAnObject;
         }

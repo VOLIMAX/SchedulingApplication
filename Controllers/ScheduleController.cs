@@ -18,7 +18,6 @@ namespace SchedulingApplication.Controllers
         }
 
         [HttpGet]
-        //[Route("/Get")]
         public IActionResult GetCalculatedSolutions(int days, int guards, int shifts)
         {
             var solutions = _solutionPrinter.CalculateSolutions(guards, days, shifts);
@@ -31,13 +30,6 @@ namespace SchedulingApplication.Controllers
 
             return Ok(solutions);
         }
-       
-        // GET api/<ScheduleController>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}        
     }
 
     

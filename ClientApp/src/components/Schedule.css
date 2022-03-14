@@ -1,11 +1,11 @@
 ﻿.App {
     font-family: sans-serif;
-    max-width: 500px;
+    max-width: 250px;
 }
 
 .section {
     padding: 10px;
-    border: 1px solid purple;
+    border: 1px solid;
     border-radius: 4px;
     margin-bottom: 20px;
 }

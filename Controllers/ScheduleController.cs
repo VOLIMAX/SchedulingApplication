@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SchedulingApplicaiton.Controllers;
 using SchedulingApplication.Services;
 using Microsoft.Extensions.Logging;
 
@@ -10,25 +9,23 @@ namespace SchedulingApplication.Controllers
     public class ScheduleController : ControllerBase
     {
         private readonly ISolutionPrinter _solutionPrinter;
-        private readonly ILogger<WeatherForecastController> _logger;
-        public ScheduleController(ISolutionPrinter solutionPrinter, ILogger<WeatherForecastController> logger)
+        public ScheduleController(ISolutionPrinter solutionPrinter)
         {
             _solutionPrinter = solutionPrinter;
-            _logger = logger;
         }
 
         [HttpGet]
         public IActionResult GetCalculatedSolutions(int days, int guards, int shifts)
         {
-            var solutions = _solutionPrinter.CalculateSolutions(guards, days, shifts);
-
-            if (solutions is null)
+            var schedulingModels = _solutionPrinter.CalculateSolutions(guards, days, shifts);
+    
+            if (schedulingModels is null || schedulingModels.Solutions.Count == 0)
             {
-                _logger.LogError("Solutions were null");
-                return BadRequest("Solutions were null");
+                //TODO: Add view for the bad request
+                return BadRequest("Failed to calculate");
             }
 
-            return Ok(solutions);
+            return Ok(schedulingModels);
         }
     }
 

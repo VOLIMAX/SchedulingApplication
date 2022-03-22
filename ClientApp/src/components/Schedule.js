@@ -57,6 +57,21 @@ export class Schedule extends Component {
                 }
             )
     }
+    
+    reset = () => {
+        this.setState({
+            data: {
+                daysNum: 0,
+                guardsNum: 0,
+                shiftsNum: 0,
+            },
+            statistics: {},
+            solutionsInfoLists: [],
+            solutions: [],
+            isLoaded: false,
+            error: null
+        })
+    }
 
     formikForm() {
         const initialValues = {daysNum: '', guardsNum: '', shiftsNum: ''};
@@ -66,10 +81,14 @@ export class Schedule extends Component {
                 <Formik
                     initialValues={initialValues}
                     onSubmit={async (values) => {
+                        this.reset()
                         this.setState({
                                 data: {daysNum: values.daysNum, guardsNum: values.guardsNum, shiftsNum: values.shiftsNum}
-                            },
+                            }, 
                             this.populateSchedulingData)
+                    }}
+                    onReset={async () => {
+                        this.reset();
                     }}
                 >
                     <div className="section">
@@ -86,7 +105,10 @@ export class Schedule extends Component {
                                 Number of shifts
                                 <Field validate={this.validate} name="shiftsNum" placeholder="0"/>
                             </label>
-                            <button type="submit">Submit</button>
+                            <div className="container-fluid justify-content-around row">
+                                <button type="submit">Submit</button>
+                                <button type="reset">Reset</button>
+                            </div>
                         </Form>
                     </div>
                 </Formik>
@@ -98,8 +120,10 @@ export class Schedule extends Component {
         // TODO: 1) make solutions as table headers in a separate list
         //       2) add reset state button
         return (
-            <table className='table table-striped'>
-                <thead className="table-dark">
+            solutions === null || typeof solutions === 'undefined' || solutions.length === 0
+                ? "No results" :
+                <table className='table table-striped'>
+                    <thead className="table-dark">
                     <tr className="d-flex flex-row justify-content-around">
                         {solutions.map(solution =>
                             <th>
@@ -107,8 +131,8 @@ export class Schedule extends Component {
                             </th>
                         )}
                     </tr>
-                </thead>
-                <tbody>
+                    </thead>
+                    <tbody>
                     <tr className="d-flex flex-row justify-content-around">
                         {solutionsInfoLists.map(solutionList =>
                             <td>
@@ -119,16 +143,16 @@ export class Schedule extends Component {
                             </td>
                         )}
                     </tr>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
         );
     }
+
 
     render() {
         let contents = this.state.isLoaded
             ? this.renderSchedulingTable(this.state.solutionsInfoLists, this.state.solutions)
             : <p><em>Waiting for you to start the calculation</em></p>;
-
 
         return (
             <div>

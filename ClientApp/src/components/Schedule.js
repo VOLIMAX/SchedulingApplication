@@ -94,20 +94,20 @@ export class Schedule extends Component {
                     <div className="section">
                         <Form>
                             <label>
-                                Number of days
+                                Кількість днів
                                 <Field validate={this.validate} name="daysNum" placeholder="0"/>
                             </label>
                             <label>
-                                Number of guards
+                                Кількість охоронців
                                 <Field validate={this.validate} name="guardsNum" placeholder="0"/>
                             </label>
                             <label>
-                                Number of shifts
+                                Кількість змін
                                 <Field validate={this.validate} name="shiftsNum" placeholder="0"/>
                             </label>
                             <div className="container-fluid justify-content-around row">
-                                <button type="submit">Submit</button>
-                                <button type="reset">Reset</button>
+                                <button type="submit">Обчислити</button>
+                                <button type="reset">Очистити</button>
                             </div>
                         </Form>
                     </div>
@@ -121,7 +121,7 @@ export class Schedule extends Component {
         //       2) add reset state button
         return (
             solutions === null || typeof solutions === 'undefined' || solutions.length === 0
-                ? "No results" :
+                ? "Обчислення повернуло 0 результатів. Спробуйте ввести інші параметри" :
                 <table className='table table-striped'>
                     <thead className="table-dark">
                     <tr className="d-flex flex-row justify-content-around">
@@ -152,12 +152,12 @@ export class Schedule extends Component {
     render() {
         let contents = this.state.isLoaded
             ? this.renderSchedulingTable(this.state.solutionsInfoLists, this.state.solutions)
-            : <p><em>Waiting for you to start the calculation</em></p>;
+            : <p><em>Заповніть поля та нажміть на кнопку "Обчислити", щоб почати обчислення</em></p>;
 
         return (
             <div>
-                <h1 id="tableLabel">Schedule</h1>
-                <p>This component creates an optimal shifts schedule for the security firm employees</p>
+                <h1 id="tableLabel">Графік Чергувань</h1>
+                <p>Цей модуль створює оптимальний графік змін для працівників охоронної фірми</p>
                 {this.formikForm()}
                 <div>{contents}</div>
             </div>

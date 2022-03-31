@@ -35,10 +35,10 @@ namespace SchedulingApplication.Services
 
         public override void OnSolutionCallback()
         {            
-            _solutions.Add($"Solution #{_solutionCount + 1}:");
+            _solutions.Add($"Розв'язок #{_solutionCount + 1}:");
             foreach (int d in _allDays)
             {                
-                _solutionsInfo.Add($"Day {d + 1}");
+                _solutionsInfo.Add($"День {d + 1}");
                 foreach (int g in _allGuards)
                 {
                     bool isWorking = false;
@@ -48,15 +48,16 @@ namespace SchedulingApplication.Services
                         if (Value(_shifts[key]) == 1L)
                         {
                             isWorking = true;                            
-                            _solutionsInfo.Add($"Guard {g + 1} works shift {s + 1}");
+                            _solutionsInfo.Add($"Охоронець {g + 1} працює у {s + 1} зміну");
                         }
                     }
                     if (!isWorking)
                     {                        
-                        _solutionsInfo.Add($"Guard {g + 1} does not work");
+                        _solutionsInfo.Add($"Охоронець {g + 1} не працює");
                     }
                 }
-            }
+                _solutionsInfo.Add($"----------------------------");
+            }            
             _solutionCount++;
             if (_solutionCount >= _solutionLimit)
             {
@@ -202,8 +203,8 @@ namespace SchedulingApplication.Services
 
         private int CalculateElementsToFormAnObject(int numDays, int numGuards)
         {
-            int numGuardsInAnObject = numDays * numGuards;
-            int calculateElementsToFormAnObject = numDays + numGuardsInAnObject;
+            int numGuardsInAnObject = numDays * numGuards;            
+            int calculateElementsToFormAnObject = numDays * 2 + numGuardsInAnObject; //double days number because we need also spacing
 
             return calculateElementsToFormAnObject;
         }

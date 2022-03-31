@@ -22,7 +22,7 @@ namespace SchedulingApplication.Controllers
             if (schedulingModels is null || schedulingModels.Solutions.Count == 0)
             {
                 //TODO: Add view for the bad request
-                return BadRequest("Failed to calculate");
+                return BadRequest("Обчислення повернуло 0 результатів. Спробуйте ввести інші параметри");
             }
 
             return Ok(schedulingModels);

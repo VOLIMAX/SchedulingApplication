@@ -6,7 +6,7 @@ using SchedulingApplication.Models;
 
 namespace SchedulingApplication.Services
 {
-    public class SolutionPrinter : CpSolverSolutionCallback, ISolutionPrinter
+    public class CalculationManager : CpSolverSolutionCallback, ICalculationManager
     {
         private int _solutionCount;
         private int[] _allGuards;
@@ -17,7 +17,7 @@ namespace SchedulingApplication.Services
         public List<string> _solutionsInfo = new ();
         public List<string> _solutions = new ();
 
-        public SolutionPrinter()
+        public CalculationManager()
         {
 
         }
@@ -159,7 +159,7 @@ namespace SchedulingApplication.Services
 
             const int solutionLimit = 5;
             
-            SolutionPrinter cb = this;
+            CalculationManager cb = this;
             SetData(allGuards, allDays, allShifts, shifts, solutionLimit);
 
             // Solve

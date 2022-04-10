@@ -8,8 +8,8 @@ namespace SchedulingApplication.Controllers
     [ApiController]
     public class ScheduleController : ControllerBase
     {
-        private readonly ISolutionPrinter _solutionPrinter;
-        public ScheduleController(ISolutionPrinter solutionPrinter)
+        private readonly ICalculationManager _solutionPrinter;
+        public ScheduleController(ICalculationManager solutionPrinter)
         {
             _solutionPrinter = solutionPrinter;
         }

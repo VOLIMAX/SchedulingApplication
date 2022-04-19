@@ -11,7 +11,7 @@ export class Home extends Component {
                 <ul>
                     <li><a href='https://get.asp.net/'>ASP.NET Core</a> і <a href='https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx'>C#</a> для розробки серверної сторони моудля</li>
                     <li><a href='https://facebook.github.io/react/'>React</a> для розробки клієнтської сторони модуля</li>
-                    <li><a href='http://getbootstrap.com/'>Bootstrap</a> для стилізації модул</li>
+                    <li><a href='http://getbootstrap.com/'>Bootstrap</a> для стилізації модуля</li>
                 </ul>  
             </div>
         );
